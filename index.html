@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Step Motor Control</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <button id="left" class="button">Left</button>
+        <button id="right" class="button">Right</button>
+        <div class="progress-container">
+            <div id="progress-bar" class="progress-bar"></div>
+        </div>
+    </div>
+    <script>
+        let stepCount = {step_count};
+        const maxSteps = 4050;
+
+        function updateProgressBar() {
+            const progressBar = document.getElementById('progress-bar');
+            const progress = (stepCount / maxSteps) * 100;
+            progressBar.style.width = progress + '%';
+        }
+
+        function setActiveButton(buttonId) {
+            document.getElementById('left').classList.remove('active');
+            document.getElementById('right').classList.remove('active');
+            document.getElementById(buttonId).classList.add('active');
+        }
+
+        function startMoving(direction) {
+            fetch('/move', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ direction: direction, action: 'start' })
+            })
+            .then(response => response.json())
+            .then(data => {
+                stepCount = data.step_count;
+                updateProgressBar();
+            });
+        }
+
+        function stopMoving() {
+            fetch('/move', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ action: 'stop' })
+            })
+            .then(response => response.json())
+            .then(data => {
+                stepCount = data.step_count;
+                updateProgressBar();
+            });
+        }
+
+        document.getElementById('left').addEventListener('mousedown', () => {
+            startMoving('left');
+            setActiveButton('left');
+        });
+
+        document.getElementById('left').addEventListener('mouseup', stopMoving);
+        document.getElementById('left').addEventListener('mouseleave', stopMoving);
+
+        document.getElementById('right').addEventListener('mousedown', () => {
+            startMoving('right');
+            setActiveButton('right');
+        });
+
+        document.getElementById('right').addEventListener('mouseup', stopMoving);
+        document.getElementById('right').addEventListener('mouseleave', stopMoving);
+    </script>
+</body>
+</html>
