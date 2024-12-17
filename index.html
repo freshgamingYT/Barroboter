@@ -5,76 +5,114 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Step Motor Control</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
 </head>
 <body>
     <div class="container">
         <button id="left" class="button">Left</button>
         <button id="right" class="button">Right</button>
+        <button id="save" class="button">Save State</button>
+        <button id="load" class="button">Load State</button>
         <div class="progress-container">
             <div id="progress-bar" class="progress-bar"></div>
         </div>
+        <div class="step-count-display">
+            Current Steps: <span id="step-count">{{ step_count }}</span>
+        </div>
     </div>
     <script>
-        let stepCount = {step_count};
-        const maxSteps = 4050;
+    const socket = io();
 
-        function updateProgressBar() {
-            const progressBar = document.getElementById('progress-bar');
-            const progress = (stepCount / maxSteps) * 100;
-            progressBar.style.width = progress + '%';
-        }
+    let stepCount = {{ step_count }};
+    const maxSteps = 4050;
 
-        function setActiveButton(buttonId) {
+    function updateProgressBar() {
+        const progressBar = document.getElementById('progress-bar');
+        const progress = (stepCount / maxSteps) * 100;
+        progressBar.style.width = progress + '%';
+    }
+
+    function updateStepCountDisplay() {
+        document.getElementById('step-count').textContent = stepCount;
+    }
+
+    function setActiveButton(buttonId) {
+        document.getElementById('left').classList.remove('active');
+        document.getElementById('right').classList.remove('active');
+        document.getElementById(buttonId).classList.add('active');
+    }
+
+    function startMoving(direction) {
+        fetch('/move', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ direction: direction, action: 'start' })
+        })
+        .then(response => response.json())
+        .then(data => {
+            stepCount = data.step_count;
+            updateProgressBar();
+            updateStepCountDisplay();
+            setActiveButton(direction);
+        });
+    }
+
+    function stopMoving() {
+        fetch('/move', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ action: 'stop' })
+        })
+        .then(response => response.json())
+        .then(data => {
+            stepCount = data.step_count;
+            updateProgressBar();
+            updateStepCountDisplay();
             document.getElementById('left').classList.remove('active');
             document.getElementById('right').classList.remove('active');
-            document.getElementById(buttonId).classList.add('active');
-        }
+        });
+    }
 
-        function startMoving(direction) {
-            fetch('/move', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ direction: direction, action: 'start' })
-            })
+    document.getElementById('left').addEventListener('mousedown', () => startMoving('left'));
+    document.getElementById('left').addEventListener('mouseup', stopMoving);
+    document.getElementById('right').addEventListener('mousedown', () => startMoving('right'));
+    document.getElementById('right').addEventListener('mouseup', stopMoving);
+    document.getElementById('save').addEventListener('click', () => {
+        fetch('/save_state', { method: 'POST' })
+            .then(response => response.json())
+            .then(data => alert(data.message));
+    });
+    document.getElementById('load').addEventListener('click', () => {
+        fetch('/load_state', { method: 'POST' })
             .then(response => response.json())
             .then(data => {
+                alert(data.message);
                 stepCount = data.step_count;
                 updateProgressBar();
-            });
-        }
-
-        function stopMoving() {
-            fetch('/move', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ action: 'stop' })
-            })
+                updateStepCountDisplay
+                document.getElementById('load').addEventListener('click', () => {
+        fetch('/load_state', { method: 'POST' })
             .then(response => response.json())
             .then(data => {
+                alert(data.message);
                 stepCount = data.step_count;
                 updateProgressBar();
+                updateStepCountDisplay();
             });
-        }
+    });
 
-        document.getElementById('left').addEventListener('mousedown', () => {
-            startMoving('left');
-            setActiveButton('left');
-        });
+    socket.on('update_step_count', (data) => {
+        stepCount = data.step_count;
+        updateProgressBar();
+        updateStepCountDisplay();
+    });
 
-        document.getElementById('left').addEventListener('mouseup', stopMoving);
-        document.getElementById('left').addEventListener('mouseleave', stopMoving);
-
-        document.getElementById('right').addEventListener('mousedown', () => {
-            startMoving('right');
-            setActiveButton('right');
-        });
-
-        document.getElementById('right').addEventListener('mouseup', stopMoving);
-        document.getElementById('right').addEventListener('mouseleave', stopMoving);
+    updateProgressBar();
+    updateStepCountDisplay();
     </script>
 </body>
 </html>
