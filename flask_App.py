@@ -1,13 +1,16 @@
-from flask import Flask, render_template, jsonify
+from flask import Flask
 from flask_socketio import SocketIO
 from servo import Servo
 from config import ConfigManager
+import views
 import threading
+import signal
+import sys
 
 class FlaskApp:
     def __init__(self, config_file: str):
         self.config_manager = ConfigManager(config_file)
-        self.config_file = 'config.json'
+        self.config_file = config_file
 
         self.app = Flask(__name__)
         self.app.config['SECRET_KEY'] = self.config_manager.get('secret_key')
@@ -18,45 +21,59 @@ class FlaskApp:
                            step_pin=self.config_manager.get('step_pin'), 
                            direction_pin=self.config_manager.get('direction_pin'), 
                            enable_pin=self.config_manager.get('enable_pin'),
+                           left_button_pin=self.config_manager.get('left_button_pin'),
+                           right_button_pin=self.config_manager.get('right_button_pin'),
                            socketio=self.socketio,
                            velocity_settings=self.config_manager.get('velocity_settings'),
-                           distance_thresholds=self.config_manager.get('distance_thresholds'),
-                           config_file=self.config_file)
+                           distance_thresholds=self.config_manager.get('distance_thresholds'))
 
-        self.setup_routes()
+        self.views = views.Views(self.app, self.servo, self.socketio)
 
-    def setup_routes(self):
-        @self.app.route('/')
-        def index():
-            return render_template('index.html', step_count=self.servo.movement.get_current_pos())
+        # Register signal handler for SIGINT
+        signal.signal(signal.SIGINT, self.signal_handler)
 
-        @self.app.route('/current_position', methods=['GET'])
-        def current_position():
-            step_count = self.servo.movement.get_current_pos()
-            return jsonify(step_count=step_count)
+        # Initialize the threading event to manage the console input thread
+        self.stop_event = threading.Event()
 
     def create_app(self):
         return self.app
 
     def cleanup(self) -> None:
+        print("Cleaning up GPIO")
         self.servo.cleanup()
+        self.stop_event.set()
 
-def console_input(servo):
-    while True:
-        step = input("Enter step (pos1, pos2, ..., pos10) or 'exit' to quit: ")
-        if step == 'exit':
-            break
-        servo.move_to(step)
+    def signal_handler(self, sig, frame):
+        print("SIGINT received, cleaning up...")
+        self.cleanup()
+        sys.exit(0)
+
+    def console_input(self):
+        possible_steps = ", ".join(self.servo.positions.keys())
+        print(f"Enter step ({possible_steps}) or 'exit' to quit:")
+        while not self.stop_event.is_set():
+            step = input()
+            if step == 'exit':
+                self.cleanup()
+                sys.exit(0)
+            if step in self.servo.positions:
+                self.servo.move_to(step)
+            else:
+                print(f"Invalid step. Please enter one of the following: {possible_steps}")
 
 if __name__ == '__main__':
     config_file = 'config.json'
     config = FlaskApp(config_file)    
     app = config.create_app()
 
-    input_thread = threading.Thread(target=console_input, args=(config.servo,))
+    # Initialize the servo position
+    config.servo.initialize_position()
+
+    input_thread = threading.Thread(target=config.console_input)
     input_thread.start()
 
     try:
         config.socketio.run(app, debug=True)
     finally:
         config.cleanup()
+        input_thread.join()
