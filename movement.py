@@ -16,6 +16,14 @@ class Movement:
         self.velocity = 0
         self.velocity_settings = velocity_settings
 
+        # Set GPIO mode
+        GPIO.setmode(GPIO.BCM)
+        GPIO.setwarnings(False)
+        GPIO.setup(self.step_pin, GPIO.OUT)
+        GPIO.setup(self.direction_pin, GPIO.OUT)
+        GPIO.setup(self.enable_pin, GPIO.OUT)
+        GPIO.output(self.enable_pin, GPIO.LOW)
+
     def set_step_length(self, steps: int) -> None:
         self.steps = steps
 
