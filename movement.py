@@ -98,7 +98,7 @@ class Movement:
         if not self.initialized:
             GPIO.output(self.direction_pin, 0)
             print("Moving to left button")
-            while GPIO.input(self.left_button_pin) == GPIO.HIGH:
+            while GPIO.input(self.left_button_pin) == 0:
                 delay = self.uS * self.us_delay
                 GPIO.output(self.step_pin, GPIO.HIGH)
                 sleep(delay)
