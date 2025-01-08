@@ -3,6 +3,8 @@
     "step_pin": 17,
     "direction_pin": 27,
     "enable_pin": 23,
+    "left_button_pin": 16,
+    "right_button_pin": 26,
     "pos": 0,
     "steps": 200,
     "us_delay": 950,
