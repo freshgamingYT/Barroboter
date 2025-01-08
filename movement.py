@@ -67,7 +67,7 @@ class Movement:
     def move_right(self, steps: int) -> None:
         GPIO.output(self.direction_pin, GPIO.HIGH)
         for i in range(steps):
-            if self.pos >= self.max_steps or GPIO.input(self.right_button_pin) == GPIO.LOW:
+            if self.pos >= self.max_steps or GPIO.input(self.right_button_pin) == 1:
                 print("Reached maximum steps or right button pressed")
                 break
             delay = self.uS * self.us_delay
@@ -82,7 +82,7 @@ class Movement:
     def move_left(self, steps: int) -> None:
         GPIO.output(self.direction_pin, GPIO.LOW)
         for i in range(steps):
-            if self.pos <= 0 or GPIO.input(self.left_button_pin) == GPIO.LOW:
+            if self.pos <= 0 or GPIO.input(self.left_button_pin) == 1:
                 print("Reached minimum steps or left button pressed")
                 break
             delay = self.uS * self.us_delay
@@ -96,7 +96,7 @@ class Movement:
 
     def move_to_left_button(self) -> None:
         if not self.initialized:
-            GPIO.output(self.direction_pin, GPIO.LOW)
+            GPIO.output(self.direction_pin, 0)
             print("Moving to left button")
             while GPIO.input(self.left_button_pin) == GPIO.HIGH:
                 delay = self.uS * self.us_delay
