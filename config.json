@@ -1,10 +1,11 @@
 {
+    "secret_key": "Keins123!",
     "step_pin": 17,
     "direction_pin": 27,
     "enable_pin": 23,
     "pos": 0,
     "steps": 200,
-    "usDelay": 950,
+    "us_delay": 950,
     "uS": 0.000001,
     "max_steps": 4050,
     "servo_steps": {
@@ -18,5 +19,14 @@
         "pos8": 3150,
         "pos9": 3600,
         "pos10": 4050
+    },
+    "velocity_settings": {
+        "velocity_1": 2000,
+        "velocity_2": 1000,
+        "velocity_3": 500
+    },
+    "distance_thresholds": {
+        "threshold_1": 450,
+        "threshold_2": 900
     }
 }
