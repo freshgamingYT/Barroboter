@@ -1,18 +1,21 @@
 from movement import Movement
 
+
+
 class Servo:
+
     def __init__(self, positions: dict, step_pin: int, direction_pin: int, enable_pin: int, left_button_pin: int, right_button_pin: int, socketio, velocity_settings: dict, distance_thresholds: dict):
         self.movement = Movement(step_pin=step_pin, direction_pin=direction_pin, enable_pin=enable_pin, left_button_pin=left_button_pin, right_button_pin=right_button_pin, socketio=socketio, velocity_settings=velocity_settings)
         self.positions = positions
         self.velocity_settings = velocity_settings
         self.distance_thresholds = distance_thresholds
+        current_pos = 0
 
     def move_to(self, step: str) -> None:
         if step in self.positions:
             target_pos = self.positions[step]
-            current_pos = self.movement.get_current_pos()
 
-            distance = abs(target_pos - current_pos)
+            distance = abs(target_pos - self.current_pos)
             if distance == 0:
                 velocity = 0
             elif distance <= self.distance_thresholds['threshold_1']:
@@ -23,13 +26,14 @@ class Servo:
                 velocity = 3
 
             self.movement.set_velocity(velocity)
-            self.movement.move_to_position(target_pos)
+            self.current_pos = self.movement.move_to_position(target_pos, self.current_pos)
         else:
             print(f"Step {step} not found")
 
     def initialize_position(self):
         print("Initializing position")
-        self.movement.move_to_left_button()
+        self.current_pos = self.movement.move_to_left_button()
 
     def cleanup(self):
         self.movement.cleanup()
+
