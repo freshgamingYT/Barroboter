@@ -21,6 +21,8 @@ class FlaskApp:
                            step_pin=self.config_manager.get('step_pin'), 
                            direction_pin=self.config_manager.get('direction_pin'), 
                            enable_pin=self.config_manager.get('enable_pin'),
+                           left_button_pin=self.config_manager.get('left_button_pin'),
+                           right_button_pin=self.config_manager.get('right_button_pin'),
                            socketio=self.socketio,
                            velocity_settings=self.config_manager.get('velocity_settings'),
                            distance_thresholds=self.config_manager.get('distance_thresholds'))
@@ -63,6 +65,9 @@ if __name__ == '__main__':
     config_file = 'config.json'
     config = FlaskApp(config_file)    
     app = config.create_app()
+
+    # Initialize the servo position
+    config.servo.initialize_position()
 
     input_thread = threading.Thread(target=config.console_input)
     input_thread.start()

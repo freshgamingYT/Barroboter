@@ -2,10 +2,12 @@ from time import sleep
 import RPi.GPIO as GPIO
 
 class Movement:
-    def __init__(self, step_pin: int, direction_pin: int, enable_pin: int, socketio, velocity_settings: dict, max_steps=4050):
+    def __init__(self, step_pin: int, direction_pin: int, enable_pin: int, left_button_pin: int, right_button_pin: int, socketio, velocity_settings: dict, max_steps=4050):
         self.step_pin = step_pin
         self.direction_pin = direction_pin
         self.enable_pin = enable_pin
+        self.left_button_pin = left_button_pin
+        self.right_button_pin = right_button_pin
         self.pos = 0
         self.steps = 200
         self.us_delay = 950
@@ -22,6 +24,8 @@ class Movement:
         GPIO.setup(self.step_pin, GPIO.OUT)
         GPIO.setup(self.direction_pin, GPIO.OUT)
         GPIO.setup(self.enable_pin, GPIO.OUT)
+        GPIO.setup(self.left_button_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        GPIO.setup(self.right_button_pin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         GPIO.output(self.enable_pin, GPIO.LOW)
 
     def set_step_length(self, steps: int) -> None:
@@ -88,6 +92,20 @@ class Movement:
             self.pos -= 1
             self.socketio.emit('update_step_count', {'step_count': self.pos})
             print(f"Moving left: current position = {self.pos}")
+
+    def move_to_left_button(self) -> None:
+        GPIO.output(self.direction_pin, GPIO.LOW)
+        while GPIO.input(self.left_button_pin) == GPIO.HIGH:
+            delay = self.uS * self.us_delay
+            GPIO.output(self.step_pin, GPIO.HIGH)
+            sleep(delay)
+            GPIO.output(self.step_pin, GPIO.LOW)
+            sleep(delay)
+            self.pos -= 1
+            self.socketio.emit('update_step_count', {'step_count': self.pos})
+            print(f"Moving left to button: current position = {self.pos}")
+        self.set_current_pos(0)
+        print("Left button pressed, position set to 0")
 
     def get_current_pos(self) -> int:
         return self.pos
