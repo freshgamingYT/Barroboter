@@ -83,7 +83,7 @@ class Movement:
     def move_left(self, steps: int, current_pos: int) -> int:
         GPIO.output(self.direction_pin, GPIO.LOW)
         for i in range(steps):
-            if current_pos <= 0 or GPIO.input(self.left_button_pin) == GPIO.LOW:
+            if current_pos <= 0 or GPIO.input(self.left_button_pin) == 1:
                 print("Reached minimum steps or left button pressed")
                 break
             delay = self.uS * self.us_delay
