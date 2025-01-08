@@ -1,8 +1,7 @@
-
 from movement import Movement
 
 class Servo:
-    def __init__(self, positions: dict, step_pin: int, direction_pin: int, enable_pin: int, socketio, velocity_settings: dict, distance_thresholds: dict, config_file: str):
+    def __init__(self, positions: dict, step_pin: int, direction_pin: int, enable_pin: int, socketio, velocity_settings: dict, distance_thresholds: dict):
         self.movement = Movement(step_pin=step_pin, direction_pin=direction_pin, enable_pin=enable_pin, socketio=socketio, velocity_settings=velocity_settings)
         self.positions = positions
         self.velocity_settings = velocity_settings
