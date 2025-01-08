@@ -17,6 +17,7 @@ class Movement:
         self.socketio = socketio
         self.velocity = 0
         self.velocity_settings = velocity_settings
+        self.initialized = False
 
         # Set GPIO mode
         GPIO.setmode(GPIO.BCM)
@@ -66,8 +67,7 @@ class Movement:
     def move_right(self, steps: int) -> None:
         GPIO.output(self.direction_pin, GPIO.HIGH)
         for i in range(steps):
-            print("move right", GPIO.input(self.right_button_pin))
-            if self.pos >= self.max_steps or GPIO.input(self.right_button_pin) == 1:
+            if self.pos >= self.max_steps or GPIO.input(self.right_button_pin) == GPIO.LOW:
                 print("Reached maximum steps or right button pressed")
                 break
             delay = self.uS * self.us_delay
@@ -82,8 +82,7 @@ class Movement:
     def move_left(self, steps: int) -> None:
         GPIO.output(self.direction_pin, GPIO.LOW)
         for i in range(steps):
-            print("move left", GPIO.input(self.left_button_pin))
-            if self.pos <= 0 or GPIO.input(self.left_button_pin) == 1:
+            if self.pos <= 0 or GPIO.input(self.left_button_pin) == GPIO.LOW:
                 print("Reached minimum steps or left button pressed")
                 break
             delay = self.uS * self.us_delay
@@ -96,19 +95,21 @@ class Movement:
             print(f"Moving left: current position = {self.pos}")
 
     def move_to_left_button(self) -> None:
-        GPIO.output(self.direction_pin, GPIO.LOW)
-        print(self.left_button_pin)
-        while GPIO.input(self.left_button_pin) == 0:
-            delay = self.uS * self.us_delay
-            GPIO.output(self.step_pin, GPIO.HIGH)
-            sleep(delay)
-            GPIO.output(self.step_pin, GPIO.LOW)
-            sleep(delay)
-            self.pos -= 1
-            self.socketio.emit('update_step_count', {'step_count': self.pos})
-            print(f"Moving left to button: current position = {self.pos}")
-        self.set_current_pos(0)
-        print("Left button pressed, position set to 0")
+        if not self.initialized:
+            GPIO.output(self.direction_pin, GPIO.LOW)
+            print("Moving to left button")
+            while GPIO.input(self.left_button_pin) == GPIO.HIGH:
+                delay = self.uS * self.us_delay
+                GPIO.output(self.step_pin, GPIO.HIGH)
+                sleep(delay)
+                GPIO.output(self.step_pin, GPIO.LOW)
+                sleep(delay)
+                self.pos -= 1
+                self.socketio.emit('update_step_count', {'step_count': self.pos})
+                print(f"Moving left to button: current position = {self.pos}")
+            self.set_current_pos(0)
+            self.initialized = True
+            print("Left button pressed, position set to 0")
 
     def get_current_pos(self) -> int:
         return self.pos

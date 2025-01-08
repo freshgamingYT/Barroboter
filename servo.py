@@ -28,6 +28,7 @@ class Servo:
             print(f"Step {step} not found")
 
     def initialize_position(self):
+        print("Initializing position")
         self.movement.move_to_left_button()
 
     def cleanup(self):
