@@ -10,7 +10,7 @@ app = Flask(__name__)
 GPIO.setmode(GPIO.BCM)
 
 # Load configuration
-config = Config('json/config.js')
+config = Config('json/config.json')
 barroboter = Barroboter(config)
 
 @app.route('/')
@@ -19,8 +19,10 @@ def index():
 
 @app.route('/start', methods=['POST'])
 def start():
-    barroboter.load_positions('json/Cocktails/positions.js')
-    barroboter.load_ingredients('json/Cocktails/ingredients/cocktail1_ingredients.js')
+    drink_name = request.form['drink_name']
+    print(f"Selected drink: {drink_name}")
+    barroboter.load_positions('json/Cocktails/positions.json')
+    barroboter.load_ingredients(f'json/Cocktails/ingredients/{drink_name}_ingredients.json')
     barroboter.start()
     return 'Process completed'
 
