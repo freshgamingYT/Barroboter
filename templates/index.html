@@ -2,32 +2,19 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Step Motor Control</title>
+    <title>Barroboter</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
 <body>
-    <h1>Step Motor Control</h1>
-    <p>Current Steps: <span id="step_count">{{ step_count }}</span></p>
+    <h1>Barroboter</h1>
+    <button onclick="startProcess()">Start</button>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.js"></script>
     <script>
-        const socket = io();
-
-        socket.on('update_step_count', function(data) {
-            document.getElementById('step_count').innerText = data.step_count;
-        });
-
-        function fetchCurrentPosition() {
-            fetch('/current_position')
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('step_count').innerText = data.step_count;
-                });
+        function startProcess() {
+            fetch('/start', { method: 'POST' })
+                .then(response => response.text())
+                .then(data => alert(data));
         }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            fetchCurrentPosition();
-        });
     </script>
 </body>
 </html>
