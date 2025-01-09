@@ -1,20 +1,99 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <title>Barroboter</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="sva-logo-2024nobackground.png" type="image/png">
+    <link rel="stylesheet" href="styles.css">
+    <title>Bar Roboter</title>
 </head>
+
+<header class="headerbox">
+    <a href="index.html"><img src="sva-logo-2024.png" class="svalogo"></a>
+    <center>
+        <a href="index.html" class="robotname">ROBOTNAME</a>
+    </center>
+</header>
+
 <body>
-    <h1>Barroboter</h1>
-    <button onclick="startProcess()">Start</button>
+    <div style="display: flex; gap: 40px; justify-content: center; padding-top: 80px;">
+        <div class="box" onclick="toggleBox(this, 'Getränk 1')">
+            <center>
+                <br>
+                <a class="getränketitel">Getränk 1</a>
+                <div>
+                    <button href="bierinfo.html" class="infobutton"><b>i</b></button>
+                </div>
+            </center>
+        </div>
+
+        <div class="box" onclick="toggleBox(this, 'Getränk 2')">
+            <center>
+                <br>
+                <a class="getränketitel">Getränk 2</a>
+                <div>
+                    <button class="infobutton"><a href="bierinfo.html" style="text-decoration: none; color: white;"><b>i</b></a></button>
+                </div>
+            </center>
+        </div>
+    </div>
+
+    <div style="display: flex; gap: 40px; justify-content: center; padding-top: 40px;">
+        <div class="box" onclick="toggleBox(this, 'Getränk 3')">
+            <center>
+                <br>
+                <a class="getränketitel">Getränk 3</a>
+                <div>
+                    <button href="bierinfo.html" class="infobutton"><b>i</b></button>
+                </div>
+            </center>
+        </div>
+
+        <div class="box" onclick="toggleBox(this, 'Getränk 4')">
+            <center>
+                <br>
+                <a class="getränketitel">Getränk 4</a>
+                <div>
+                    <button href="bierinfo.html" class="infobutton"><b>i</b></button>
+                </div>
+            </center>
+        </div>
+    </div>
+
+    <div style="display: flex; gap: 40px; justify-content: center; padding-top: 40px;">
+        <div class="box" onclick="toggleBox(this, 'Getränk 5')">
+            <center>
+                <br>
+                <a class="getränketitel">Getränk 5</a>
+                <div>
+                    <button href="bierinfo.html" class="infobutton"><b>i</b></button>
+                </div>
+            </center>
+        </div>
+
+        <div class="box" onclick="toggleBox(this, 'Getränk 6')">
+            <center>
+                <br>
+                <a class="getränketitel">Getränk 6</a>
+                <div>
+                    <button href="bierinfo.html" class="infobutton"><b>i</b></button>
+                </div>
+            </center>
+        </div>
+    </div>
+
+    <form id="drinkForm" method="POST" action="/start" style="display: none;">
+        <input type="hidden" name="drink_name" id="drinkName">
+    </form>
 
     <script>
-        function startProcess() {
-            fetch('/start', { method: 'POST' })
-                .then(response => response.text())
-                .then(data => alert(data));
+        function toggleBox(element, drinkName) {
+            element.classList.toggle('active');
+            document.getElementById('drinkName').value = drinkName;
+            document.getElementById('drinkForm').submit();
         }
     </script>
 </body>
+
 </html>
