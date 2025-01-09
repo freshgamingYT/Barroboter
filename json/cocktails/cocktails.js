@@ -1,0 +1,3 @@
+{
+  "swimming_pool" = 1
+}
