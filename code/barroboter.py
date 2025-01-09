@@ -3,7 +3,7 @@ import RPi.GPIO as GPIO
 import time
 from config import Config
 from servo import Servo
-from stepper_moter import StepperMotor
+from stepper_motor import StepperMotor
 
 class Barroboter:
     def __init__(self, config):
