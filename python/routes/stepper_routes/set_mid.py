@@ -9,3 +9,5 @@ set_mid_route = Blueprint('set_mid_route', __name__)
 def set_mid():
     data = request.get_json()
     logger.debug(f'Received set_mid command: {data}')
+    return jsonify({'status': 'success'})
+
