@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../pictures/sva-logo-2024nobackground.png" type="image/png">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <title>Bar Roboter</title>
+</head>
+
+<header class="headerbox">
+    <a href="/"><img src="../pictures/sva-logo-2024.png" class="svalogo"></a>
+    <center>
+        <a href="/" class="robotname">ROBOTNAME</a>
+    </center>
+</header>
+
+<body>
+    <div style="display: flex; gap: 40px; justify-content: center; padding-top: 80px;">
+        <div class="box" onclick="toggleBox(this)">
+            <center>
+                <br>
+                <a class="getränketitel" href="/cocktail/1">Getränk 1</a>
+                <div>
+                    <button href="bierinfo.html" class="infobutton"><b>i</b></button>
+                </div>
+            </center>
+        </div>
+
+        <div class="box" onclick="toggleBox(this)">
+            <center>
+                <br>
+                <a class="getränketitel" href="/cocktail/2">Getränk 2</a>
+                <div>
+                    <button class="infobutton"><a href="bierinfo.html" style="text-decoration: none; color: white;"><b>i</b></a></button>
+                </div>
+            </center>
+        </div>
+    </div>
+
+    <div style="display: flex; gap: 40px; justify-content: center; padding-top: 40px;">
+        <div class="box" onclick="toggleBox(this)">
+            <center>
+                <br>
+                <a class="getränketitel" href="/cocktail/3">Getränk 3</a>
+                <div>
+                    <button href="bierinfo.html" class="infobutton"><b>i</b></button>
+                </div>
+            </center>
+        </div>
+
+        <div class="box" onclick="toggleBox(this)">
+            <center>
+                <br>
+                <a class="getränketitel" href="/cocktail/4">Getränk 4</a>
+                <div>
+                    <button href="bierinfo.html" class="infobutton"><b>i</b></button>
+                </div>
+            </center>
+        </div>
+    </div>
+
+    <div style="display: flex; gap: 40px; justify-content: center; padding-top: 40px;">
+        <div class="box" onclick="toggleBox(this)">
+            <center>
+                <br>
+                <a class="getränketitel" href="/cocktail/5">Getränk 5</a>
+                <div>
+                    <button href="bierinfo.html" class="infobutton"><b>i</b></button>
+                </div>
+            </center>
+        </div>
+
+        <div class="box" onclick="toggleBox(this)">
+            <center>
+                <br>
+                <a class="getränketitel" href="/cocktail/6">Getränk 6</a>
+                <div>
+                    <button href="bierinfo.html" class="infobutton"><b>i</b></button>
+                </div>
+            </center>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+    <script>
+        function toggleBox(element) {
+            element.classList.toggle('active');
+        }
+    </script>
+</body>
+
+</html>
