@@ -33,6 +33,7 @@ class StepperInit:
         self.initSequence = self.initFileHandler.readJson()
         self.available_cocktails_file = "./json/available_cocktails.json" 
         self.load_available_cocktails()
+        self.init()  # Run the stepper init sequence when the program starts
 
     def GPIOConfig(self):
         # GPIO setup
@@ -108,31 +109,6 @@ class StepperInit:
         for cocktail in self.available_cocktails:
             print(f"- {cocktail}") 
 
-        while 1:
-            try:
-                user_input = input("Enter cocktail name or 'q' to quit: ")
-                if user_input.lower() == 'q':
-                    break
-
-                if user_input in self.available_cocktails: 
-                    sequence_file = f"./json/sequences/{user_input}_sequence.json"  # Corrected file path
-                    if os.path.exists(sequence_file):
-                        sequence_file_handler = FileHandler(sequence_file)
-                        sequence = sequence_file_handler.readJson()
-                        self.execute_sequence(sequence)
-                    else:
-                        print(f"Error: {user_input}_sequence.json file not found.")
-                else:
-                    print(f"Invalid cocktail name: {user_input}")
-
-            except KeyboardInterrupt:
-                print("Exiting program...")
-                break
-
-            if (self.aktuellePos < 0) or (self.aktuellePos > self.maxPos):
-                print("Limit switch triggered! Stopping motor.")
-                break 
-
     def execute_sequence(self, sequence):
         total_steps = len(sequence)
         current_step = 0
@@ -146,7 +122,7 @@ class StepperInit:
                 # Send progress update to the client
                 current_step += 1
                 progress = (current_step / total_steps) * 100
-                self.send_progress_update(progress)
+                socketio.emit('progress_update', {'progress': progress}, broadcast=True)
             else:
                 print(f"Invalid position in sequence: {position_name}")
 
@@ -155,17 +131,17 @@ class StepperInit:
                 time.sleep(10) 
                 self.move_to_position(self.nullPos) 
                 print("Returned to Null position.")
-                self.send_progress_update(100)  # Ensure progress is 100% at the end
-                self.send_redirect_to_index()  # Redirect to index page
+                socketio.emit('progress_update', {'progress': 100}, broadcast=True)  # Ensure progress is 100% at the end
+                socketio.emit('redirect_to_index', {}, broadcast=True)  # Redirect to index page
                 break
 
     def move_to_position(self, target_steps, speed='mid'):
         """Moves the motor to the specified position."""
         relative_steps = target_steps - self.aktuellePos
-        self.moveRelPos(relative_steps, self.aktuellePos, speed)  # Pass aktuellePos and speed to moveRelPos
+        self.moveRelPos(relative_steps, speed)  # Pass speed to moveRelPos
         self.aktuellePos = target_steps
 
-    def moveRelPos(self, relative_steps, aktuellePos, speed):
+    def moveRelPos(self, relative_steps, speed):
         """Moves the motor by the specified relative number of steps."""
         direction = GPIO.HIGH if relative_steps > 0 else GPIO.LOW
         absolute_steps = abs(relative_steps)
@@ -186,11 +162,11 @@ class StepperInit:
             time.sleep(delay)
 
             if direction == GPIO.HIGH:
-                aktuellePos += 1
+                self.aktuellePos += 1
             else:
-                aktuellePos -= 1
+                self.aktuellePos -= 1
 
-            if (aktuellePos < 0) or (aktuellePos > self.maxPos):
+            if (self.aktuellePos < 0) or (self.aktuellePos > self.maxPos):
                 print("Limit switch triggered! Stopping motor.")
                 break
 
@@ -209,15 +185,8 @@ class StepperInit:
         with open(self.available_cocktails_file, 'w') as f:
             json.dump(self.available_cocktails, f, indent=4)
 
-    def send_progress_update(self, progress):
-        emit('progress_update', {'progress': progress}, broadcast=True, namespace='/')
-
-    def send_redirect_to_index(self):
-        emit('redirect_to_index', {}, broadcast=True, namespace='/')
-
 if __name__ == "__main__":
     try:
         stepper = StepperInit()
-        stepper.init()
     except Exception as e:
         print(e)
