@@ -34,8 +34,13 @@
         <h1 class="zutat">Wasser - 100ml</h1>
     </div>
 
-    <button class="mixbutton" onclick="startButtonPressed()" href="progressbar_C1.html">Jetzt Zubereiten!</button>
+    <button class="mixbutton" onclick="startButtonPressed()">Jetzt Zubereiten!</button>
 
+    <div class="progress-container">
+        <div id="progress-bar" class="progress-bar"></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.js"></script>
     <script>
         function startButtonPressed() {
             fetch('/api/select-cocktail', {
@@ -54,6 +59,19 @@
                 console.error('Error:', error);
             });
         }
+
+        // Initialize WebSocket connection
+        var socket = io();
+
+        // Listen for progress updates
+        socket.on('progress_update', function(data) {
+            setProgress(data.progress);
+        });
+
+        // Listen for redirect command
+        socket.on('redirect_to_index', function() {
+            window.location.href = '/';
+        });
     </script>
 </body>
 
