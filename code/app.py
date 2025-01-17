@@ -1,9 +1,11 @@
 from flask import Flask, request, jsonify, render_template
+from flask_socketio import SocketIO, emit
 from StepperInit import StepperInit
 import json
 import os
 
 app = Flask(__name__)
+socketio = SocketIO(app)
 
 # Initialize the stepper motor
 stepper = StepperInit()
@@ -71,7 +73,14 @@ def init_stepper():
     stepper.init()
     return jsonify({"status": "success", "message": "Stepper initialized."})
 
-# Add more routes for servo and scale as needed
+# WebSocket event handlers
+@socketio.on('connect')
+def handle_connect():
+    print('Client connected')
+
+@socketio.on('disconnect')
+def handle_disconnect():
+    print('Client disconnected')
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    socketio.run(app, debug=True)
