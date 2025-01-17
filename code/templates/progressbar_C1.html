@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="sva-logo-2024nobackground.png" type="image/png">
+    <link rel="stylesheet" href="styles.css">
+    <title>Bar Roboter</title>
+</head>
+
+<header class="headerbox">
+    <a href="index.html"><img src="sva-logo-2024.png" class="svalogo"></a>
+    <center>
+        <a href="index.html" class="robotname">DrinkName</a>
+    </center>
+</header>
+
+<body>
+    <center>
+        <div class="robotname" style="padding-top: 70px;">Ihr Getränk wird zubereitet<span class="dots"></span></div>
+    </center>
+    <div class="progress-container">
+        <div class="progress-bar" id="progress-bar"></div>
+    </div>
+    
+    <div class="markers">
+        <div class="marker" style="left: 25%;">25%<span class="line"></span></div>
+        <div class="marker" style="left: 50%;">50%<span class="line"></span></div>
+        <div class="marker" style="left: 75%;">75%<span class="line"></span></div>
+        <div class="marker" style="left: 100%;">100%<span class="line"></span></div>
+    </div>
+    <div class="buttons">
+        <button onclick="setProgress(0)">0%</button>
+        <button onclick="setProgress(12.5)">25%</button>
+        <button onclick="setProgress(37.5)">50%</button>
+        <button onclick="setProgress(62.5)">75%</button>
+        <button onclick="setProgress(87.5)">100%</button>
+        <button onclick="setProgress(100)">Finished</button>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
