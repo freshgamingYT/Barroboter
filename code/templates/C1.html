@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="../pictures/sva-logo-2024nobackground.png" type="image/png">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <title>Bar Roboter</title>
+</head>
+
+<header class="headerbox">
+    <a href="/"><img src="../pictures/sva-logo-2024.png" class="svalogo"></a>
+    <center>
+        <a href="/" class="robotname">Virgin Colada</a>
+    </center>
+</header>
+
+<body>
+    <img src="../pictures/c1.png" class="c_pic" href="info_c1.html">
+    <div style="padding-top: 100px">
+        <h1 class="zutat">Coconut Cream - 4cl</h1>
+    </div>
+    <div style="padding-top: 15px">
+        <h1 class="zutat">Orangensaft - 6cl</h1>
+    </div>
+    <div style="padding-top: 15px">
+        <h1 class="zutat">Ananassaft - 8cl</h1>
+    </div>
+    <div style="padding-top: 15px">
+        <h1 class="zutat">Eiswürfel</h1>
+    </div>
+    <div style="padding-top: 15px">
+        <h1 class="zutat">Wasser - 100ml</h1>
+    </div>
+
+    <button class="mixbutton" onclick="startButtonPressed()" href="progressbar_C1.html">Jetzt Zubereiten!</button>
+
+    <script>
+        function startButtonPressed() {
+            fetch('/api/select-cocktail', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ cocktail_name: 'Virgin Colada' })
+            }).then(response => {
+                if (response.ok) {
+                    console.log('Button pressed');
+                } else {
+                    console.error('Failed to press button');
+                }
+            }).catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
+</body>
+
+</html>
