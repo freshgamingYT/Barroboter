@@ -14,4 +14,3 @@ function startProgress() {
 function setProgress(target) {
     let progressBar = document.getElementById('progress-bar');
     progressBar.style.width = target + '%';
-}
