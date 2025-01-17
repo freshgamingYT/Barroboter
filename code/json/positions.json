@@ -1,0 +1,12 @@
+{
+  "Null": 0,
+  "Endpoint": 5700, 
+  "Vodka_Pos": 1000, 
+  "Gin_Pos": 2000, 
+  "Rum_Pos": 3456, 
+  "Orange_Juice_Pos": 1100, 
+  "Lemon_Juice_Pos": 2500, 
+  "Tequila_Pos": 4500, 
+  "TripleSec_Pos": 500, 
+  "Lime_Juice_Pos": 5000 
+}
