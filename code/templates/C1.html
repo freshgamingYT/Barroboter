@@ -12,54 +12,28 @@
 <header class="headerbox">
     <a href="/"><img src="../pictures/sva-logo-2024.png" class="svalogo"></a>
     <center>
-        <a href="/" class="robotname">Virgin Colada</a>
+        <a href="/" class="robotname">DrinkName</a>
     </center>
 </header>
 
 <body>
-    <img src="../pictures/c1.png" class="c_pic" href="info_c1.html">
-    <div style="padding-top: 100px">
-        <h1 class="zutat">Coconut Cream - 4cl</h1>
-    </div>
-    <div style="padding-top: 15px">
-        <h1 class="zutat">Orangensaft - 6cl</h1>
-    </div>
-    <div style="padding-top: 15px">
-        <h1 class="zutat">Ananassaft - 8cl</h1>
-    </div>
-    <div style="padding-top: 15px">
-        <h1 class="zutat">Eiswürfel</h1>
-    </div>
-    <div style="padding-top: 15px">
-        <h1 class="zutat">Wasser - 100ml</h1>
-    </div>
-
-    <button class="mixbutton" onclick="startButtonPressed()">Jetzt Zubereiten!</button>
-
+    <center>
+        <div class="robotname" style="padding-top: 70px;">Ihr Getränk wird zubereitet<span class="dots"></span></div>
+    </center>
     <div class="progress-container">
-        <div id="progress-bar" class="progress-bar"></div>
+        <div class="progress-bar" id="progress-bar"></div>
     </div>
-
+    
+    <div class="markers">
+        <div class="marker" style="left: 25%;">25%<span class="line"></span></div>
+        <div class="marker" style="left: 50%;">50%<span class="line"></span></div>
+        <div class="marker" style="left: 75%;">75%<span class="line"></span></div>
+        <div class="marker" style="left: 100%;">100%<span class="line"></span></div>
+    </div>
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.js"></script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
     <script>
-        function startButtonPressed() {
-            fetch('/api/select-cocktail', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ cocktail_name: 'Virgin Colada' })
-            }).then(response => {
-                if (response.ok) {
-                    console.log('Button pressed');
-                } else {
-                    console.error('Failed to press button');
-                }
-            }).catch(error => {
-                console.error('Error:', error);
-            });
-        }
-
         // Initialize WebSocket connection
         var socket = io();
 
@@ -74,5 +48,4 @@
         });
     </script>
 </body>
-
 </html>
