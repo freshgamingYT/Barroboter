@@ -2,6 +2,7 @@ import RPi.GPIO as GPIO
 import time
 import json
 import os
+from flask_socketio import emit
 
 from logger import setup_logger
 from fileHandler import FileHandler
@@ -133,23 +134,31 @@ class StepperInit:
                 break 
 
     def execute_sequence(self, sequence):
+        total_steps = len(sequence)
+        current_step = 0
+
         for position_name, wait_time in sequence.items():
             if position_name in self.positions:
                 target_steps = self.positions[position_name]  # Lookup the position in positions.json
                 self.move_to_position(target_steps)
                 time.sleep(wait_time)  # Wait for the specified time
+
+                # Send progress update to the client
+                current_step += 1
+                progress = (current_step / total_steps) * 100
+                self.send_progress_update(progress)
             else:
                 print(f"Invalid position in sequence: {position_name}")
-    
+
             if position_name == "finished":
                 print("Sequence completed. Waiting for 10 seconds...")
                 time.sleep(10) 
                 self.move_to_position(self.nullPos) 
                 print("Returned to Null position.")
-                print("Available Cocktails:")
-                for cocktail in self.available_cocktails:
-                    print(f"- {cocktail}") 
+                self.send_progress_update(100)  # Ensure progress is 100% at the end
+                self.send_redirect_to_index()  # Redirect to index page
                 break
+
     def move_to_position(self, target_steps, speed='mid'):
         """Moves the motor to the specified position."""
         relative_steps = target_steps - self.aktuellePos
@@ -199,6 +208,12 @@ class StepperInit:
     def save_available_cocktails(self):
         with open(self.available_cocktails_file, 'w') as f:
             json.dump(self.available_cocktails, f, indent=4)
+
+    def send_progress_update(self, progress):
+        emit('progress_update', {'progress': progress}, broadcast=True, namespace='/')
+
+    def send_redirect_to_index(self):
+        emit('redirect_to_index', {}, broadcast=True, namespace='/')
 
 if __name__ == "__main__":
     try:
