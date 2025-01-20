@@ -15,7 +15,7 @@
 15	GPIO 22
 16	GPIO 23 - Schrittmotor STEEP
 17	3v
-18	GPIO 24 - Schrittmotor Groung
+18	GPIO 24 - Schrittmotor EN
 19	GPIO 10 - SPI MOSI
 20	Ground
 21	GPIO 9 - SPI MISO
